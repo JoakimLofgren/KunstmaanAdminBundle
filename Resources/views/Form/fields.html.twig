@@ -2,16 +2,10 @@
 
 {% block choice_widget_expanded %}
     {% spaceless %}
-        <div {{ block('widget_container_attributes') }} class="nested_input_prop_container choice">
-            {% for child in form %}
-                <div class="input_prop">
-                    {{ form_label(child) }}
-                    <div class="input">
-                        {{ form_widget(child) }}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+        {% for child in form %}
+            {# form_label(child) #}
+            {{ form_widget(child) }}
+        {% endfor %}
     {% endspaceless %}
 {% endblock choice_widget_expanded %}
 
@@ -39,6 +33,24 @@
 
 {% block form_row %}
     {% spaceless %}
+    {% if 'checkbox' in form.vars.block_prefixes or 'radio' in form.vars.block_prefixes %}
+        {# Override single checkbox & radio rendering #}
+        <div class="control-group">
+            <div class="controls">
+                {{ form_widget(form) }}
+            </div>
+        </div>
+    {% elseif 'choice' in form.vars.block_prefixes %}
+        {# Override single checkbox & radio rendering #}
+        <div class="input_prop{% if errors|length > 0 %} error{% endif %}">
+            {{ form_label(form) }}
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                {{ form_widget(form) }}
+            </div>
+        </div>
+    {% else %}
         <div class="input_prop{% if errors|length > 0 %} error{% endif %}">
             {{ form_label(form) }}
             <div class="input">
@@ -95,6 +107,7 @@
                 {{ form_errors(form) }}
             </div>
         </div>
+    {% endif %}
     {% endspaceless %}
 {% endblock form_row %}
 
@@ -154,3 +167,15 @@
         {% endif %}
     {% endspaceless %}
 {% endblock form_errors %}
+
+{% block checkbox_widget %}
+    {% spaceless %}
+        <label for="{{ id }}" class="checkbox"><input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />{{ label|trans }}</label>
+    {% endspaceless %}
+{% endblock checkbox_widget %}
+
+{% block radio_widget %}
+    {% spaceless %}
+        <label for="{{ id }}"><input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />{{ label|trans }}</label>
+    {% endspaceless %}
+{% endblock radio_widget %}
